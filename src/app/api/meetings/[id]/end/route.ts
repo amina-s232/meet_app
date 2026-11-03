@@ -40,7 +40,7 @@ async function endMeeting(_req: Request, { params }: Ctx) {
 
     return NextResponse.json({ meeting: toMeetingDto(ended, userId) });
   } catch (err) {
-    console.error("End meeting error:", err);
+    console.error("End meeting error:", err instanceof Error ? err.name : "Error");
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

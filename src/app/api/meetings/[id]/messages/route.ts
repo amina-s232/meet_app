@@ -63,7 +63,7 @@ export async function GET(req: Request, { params }: MeetingRouteContext) {
       nextCursor,
     });
   } catch (err) {
-    console.error("Get messages error:", err);
+    console.error("Get messages error:", err instanceof Error ? err.name : "Error");
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
@@ -160,7 +160,7 @@ export async function POST(req: Request, { params }: MeetingRouteContext) {
 
     return NextResponse.json({ message }, { status: 201 });
   } catch (err) {
-    console.error("Send message error:", err);
+    console.error("Send message error:", err instanceof Error ? err.name : "Error");
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

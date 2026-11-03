@@ -292,7 +292,7 @@ export function useMeetingConnection({ meetingCode, displayName, localStream, en
       setMySocketId(socket.id ?? null);
       startJoinTimeout();
       if (process.env.NODE_ENV !== "production") {
-        console.info("[meeting-connection] join-meeting emitted", { meetingCode, userName: nameRef.current });
+        console.info("[meeting-connection] join-meeting emitted", { meetingCode });
       }
       socket.emit("join-meeting", { meetingCode, userName: nameRef.current });
     });
@@ -316,7 +316,7 @@ export function useMeetingConnection({ meetingCode, displayName, localStream, en
 
     socket.on("participants-list", (list: Participant[]) => {
       if (process.env.NODE_ENV !== "production") {
-        console.info("[meeting-connection] participants-list received", list);
+        console.info("[meeting-connection] participants-list received", { count: list.length });
       }
       clearJoinTimeout();
       hasJoinedRef.current = true;

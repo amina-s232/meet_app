@@ -61,7 +61,7 @@ export async function POST(req: Request, { params }: MeetingRouteContext) {
 
     return NextResponse.json({ participant }, { status: 201 });
   } catch (err) {
-    console.error("Join meeting error:", err);
+    console.error("Join meeting error:", err instanceof Error ? err.name : "Error");
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

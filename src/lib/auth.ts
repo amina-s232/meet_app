@@ -1,3 +1,5 @@
+// Security notice: User credentials (passwords, emails, tokens) must never be logged or exposed in URLs.
+
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";

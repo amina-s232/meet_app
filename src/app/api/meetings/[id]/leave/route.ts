@@ -56,7 +56,7 @@ export async function POST(req: Request, { params }: MeetingRouteContext) {
 
     return NextResponse.json({ left: true, count: result.count });
   } catch (err) {
-    console.error("Leave meeting error:", err);
+    console.error("Leave meeting error:", err instanceof Error ? err.name : "Error");
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

@@ -1,3 +1,5 @@
+// Security notice: User credentials (passwords, emails, tokens) must never be logged or exposed in URLs.
+
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
@@ -41,7 +43,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ user }, { status: 201 });
   } catch (err) {
-    console.error("Signup error:", err);
+    console.error("Signup error:", err instanceof Error ? err.name : "Internal error");
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

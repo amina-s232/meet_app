@@ -1,5 +1,7 @@
 "use client";
 
+// Security notice: User credentials (passwords, emails, tokens) must never be logged or exposed in URLs.
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -54,7 +56,7 @@ export default function LoginForm({ callbackUrl, initialError }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} method="post" noValidate className="space-y-4">
       {serverError && (
         <div
           role="alert"
