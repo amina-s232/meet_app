@@ -32,7 +32,8 @@ export async function GET(_req: Request, { params }: MeetingRouteContext) {
       participants,
     });
   } catch (err) {
-    console.error("Get participants error:", err);
+    console.error("Get participants error:", err instanceof Error ? err.name : "Error");
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
+

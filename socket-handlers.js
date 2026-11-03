@@ -1,3 +1,5 @@
+// Security notice: User credentials, tokens, cookies, and message contents must never be logged.
+
 import { z } from "zod";
 import nextAuthJwt from "next-auth/jwt";
 
@@ -57,10 +59,21 @@ function withTimeout(promise, ms, timeoutMessage) {
   ]);
 }
 
+function sanitizeExtra(extra) {
+  if (!extra || typeof extra !== "object") return undefined;
+  const safe = {};
+  if (typeof extra.room === "string") safe.room = extra.room;
+  if (typeof extra.count === "number") safe.count = extra.count;
+  if (typeof extra.to === "string") safe.to = extra.to;
+  if (typeof extra.meetingCode === "string") safe.meetingCode = extra.meetingCode;
+  return Object.keys(safe).length > 0 ? safe : undefined;
+}
+
 function logSocket(event, socketId, outcome, extra) {
   if (process.env.DEBUG_SOCKET === "1") {
-    if (extra !== undefined) {
-      console.log(`[socket] ${event} socket=${socketId} outcome=${outcome}`, extra);
+    const safe = sanitizeExtra(extra);
+    if (safe !== undefined) {
+      console.log(`[socket] ${event} socket=${socketId} outcome=${outcome}`, safe);
     } else {
       console.log(`[socket] ${event} socket=${socketId} outcome=${outcome}`);
     }
@@ -142,7 +155,7 @@ export function registerSocketHandlers(io, prisma) {
           "Database timeout updating participant leftAt"
         );
       } catch (err) {
-        console.error("[socket] update participant leftAt failed:", err);
+        console.error("[socket] update participant leftAt failed:", err instanceof Error ? err.name : "Error");
       }
     }
   }
@@ -182,7 +195,7 @@ export function registerSocketHandlers(io, prisma) {
           }
           await handler(data);
         } catch (err) {
-          console.error(`[socket] ${event} failed:`, err);
+          console.error(`[socket] ${event} failed:`, err instanceof Error ? err.name : "Error");
           fail(event, "Internal server error");
         }
       });
@@ -207,7 +220,7 @@ export function registerSocketHandlers(io, prisma) {
 
     // ---------- join / leave ----------
     on("join-meeting", async ({ meetingCode, userName }) => {
-      logSocket("join-meeting", socket.id, "received", { meetingCode, userName });
+      logSocket("join-meeting", socket.id, "received", { meetingCode });
 
       // Idempotent: a repeated join (e.g. React StrictMode) just re-sends the state
       if (socket.data.meeting?.code === meetingCode) {
@@ -289,7 +302,7 @@ export function registerSocketHandlers(io, prisma) {
 
         logSocket("join-meeting", socket.id, "success", { count: allParticipants.length });
       } catch (err) {
-        console.error("[socket] join-meeting failed:", err);
+        console.error("[socket] join-meeting failed:", err instanceof Error ? err.name : "Error");
         const message = err instanceof Error && err.message.includes("Database timeout")
           ? "Database timed out. Please try again."
           : "Internal server error";
@@ -373,7 +386,7 @@ export function registerSocketHandlers(io, prisma) {
 
     // Tab closed / network lost: behave like leave-meeting
     socket.on("disconnecting", () => {
-      leaveMeeting(socket).catch((err) => console.error("[socket] leave on disconnect failed:", err));
+      leaveMeeting(socket).catch((err) => console.error("[socket] leave on disconnect failed:", err instanceof Error ? err.name : "Error"));
     });
   });
 }

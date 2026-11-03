@@ -31,7 +31,7 @@ export async function GET(_req: Request, { params }: Ctx) {
 
     return NextResponse.json({ meeting: toMeetingDto(meeting, userId) });
   } catch (err) {
-    console.error("Get meeting error:", err);
+    console.error("Get meeting error:", err instanceof Error ? err.name : "Error");
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
@@ -73,7 +73,8 @@ export async function PATCH(req: Request, { params }: Ctx) {
 
     return NextResponse.json({ meeting: toMeetingDto(updated, userId) });
   } catch (err) {
-    console.error("Update meeting error:", err);
+    console.error("Update meeting error:", err instanceof Error ? err.name : "Error");
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
+

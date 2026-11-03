@@ -52,7 +52,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ error: "Could not generate a unique code" }, { status: 500 });
   } catch (err) {
-    console.error("Create meeting error:", err);
+    console.error("Create meeting error:", err instanceof Error ? err.name : "Error");
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
@@ -87,7 +87,7 @@ export async function GET(req: Request) {
 
     return NextResponse.json({ meetings: meetings.map((m) => toMeetingDto(m, userId)) });
   } catch (err) {
-    console.error("List meetings error:", err);
+    console.error("List meetings error:", err instanceof Error ? err.name : "Error");
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
